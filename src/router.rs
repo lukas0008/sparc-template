@@ -1,16 +1,12 @@
-use axum::{routing::get, Router};
+use axum::Router;
 use tower_request_id::RequestIdLayer;
 
-use crate::{setup, AppState};
+use crate::{setup, STATE};
 
-async fn authed(_user: crate::core::user::UserExtractor) -> &'static str {
-    "authenticated wawa"
-}
-
-pub fn make_router(state: AppState) -> Router {
+pub fn make_router() -> Router {
     axum::Router::new()
         .nest("/", crate::routes::router::make_router())
-        .with_state(state)
+        .with_state(STATE.clone())
         .layer(setup::trace_layer!())
         .layer(RequestIdLayer)
 }
